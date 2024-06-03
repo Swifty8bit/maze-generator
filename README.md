@@ -1,5 +1,3 @@
-#simple procedural maze generator
+# simple procedural maze generator
 
-huh, who tf reads that?
-just another boring side project that I just wanted to make inspired from here:
-[youtube link](https://youtu.be/Co1rAKW7bbo?t=296)
+[![How it works](https://img.youtube.com/vi/gp1uFA5iJ4s.jpg)](https://www.youtube.com/watch?v=gp1uFA5iJ4s)
