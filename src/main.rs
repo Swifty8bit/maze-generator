@@ -1,23 +1,26 @@
 use image::{ImageBuffer, Rgb};
 use rand::Rng;
-use array2d;
 
-const SQUAREX: u32 = 8;
-const SQUAREY: u32 = 8;
+// Variables to change
+
+const SQUAREX: u32 = 30;
+const SQUAREY: u32 = 30;
+
+const BRANCHES: u32 = 10;
+const BRANCH_LENGTH: u32 = 100;
+
+// Variables to not change
 
 const SQUARE_SIZE: u8 = 5;
 const OFFSET: u8 = SQUARE_SIZE - 1;
-
-const BRANCHES: u32 = 1;
-const BRANCH_LENGTH: u32 = 1;
 
 const COLOR_WHITE: Rgb<u8> = image::Rgb([240, 240, 240]);
 const COLOR_BACKGROUND: Rgb<u8> = image::Rgb([0, 0, 0]);
 
 fn main() 
 {
-    let imgx: u32 = 800;
-    let imgy: u32 = 600;
+    let imgx: u32 = 180;
+    let imgy: u32 = 180;
 
     let mut imgbuf: ImageBuffer<image::Rgb<u8>, Vec<u8>> = image::ImageBuffer::new(imgx,imgy);
 
@@ -27,14 +30,25 @@ fn main()
     }
 
     // create two dimensionl array of information about each square
-    let mut square_vec: Vec<Vec<Square>> = Vec::new();
+    let tempsq = Square
+    {
+        x: 0,
+        y: 0,
+        visible: false,
+        up: false,
+        down: false,
+        left: false,
+        right: false
+    };
+
+    let mut square_arr: [[Square; SQUAREY as usize]; SQUAREX as usize] = 
+    [[tempsq; SQUAREY as usize]; SQUAREX as usize];
 
     for n in 0..SQUAREX
     {
-        let mut inner_vec: Vec<Square> = Vec::new();
         for m in 0..SQUAREY
         {
-            inner_vec.push(Square
+            square_arr[n as usize][m as usize] = Square
                 {
                     x: n,
                     y: m,
@@ -43,10 +57,8 @@ fn main()
                     down: false,
                     left: false,
                     right: false
-                });
+                };
         }
-        print!(" ");
-        square_vec.push(inner_vec);
     }
 
     // labyrinth
@@ -57,10 +69,8 @@ fn main()
 
         let starting_point_x = (rng_x * SQUAREX as f64) as usize;
         let starting_point_y = (rng_y * SQUAREY as f64) as usize;
-
-        let mut vec = square_vec.get_mut(starting_point_x).unwrap();
-        let mut sqr = vec.get_mut(starting_point_y).unwrap();
         
+        let mut sqr = &mut square_arr[starting_point_x][starting_point_y];
 
         sqr.visible = true;
 
@@ -71,28 +81,34 @@ fn main()
             if rng < 0.25 && sqr.x > 0
             {
                 sqr.up = true;
-                
-                vec = square_vec.get_mut((sqr.x - 1) as usize).unwrap();
-                sqr = vec.get_mut(starting_point_y).unwrap();
-                
+                sqr = &mut square_arr[(sqr.x - 1) as usize][sqr.y as usize];
+                sqr.down = true;
             }
             else if rng < 0.5 && sqr.x < SQUAREX - 1
             {
                 sqr.down = true;
+                sqr = &mut square_arr[(sqr.x + 1) as usize][sqr.y as usize];
+                sqr.up = true;
             }
             else if rng < 0.75 && sqr.y > 0
             {
                 sqr.left = true;
+                sqr = &mut square_arr[sqr.x as usize][(sqr.y - 1)as usize];
+                sqr.right = true;
             }
             else if sqr.y < SQUAREY - 1
             {
                 sqr.right = true;
+                sqr = &mut square_arr[sqr.x as usize][(sqr.y + 1)as usize];
+                sqr.left = true;
             }
+
+            sqr.visible = true;
         }
     }
 
     // draws the ones that are visible
-    for n in square_vec 
+    for n in square_arr.iter_mut() 
     {
         for m in n
         {
@@ -100,7 +116,9 @@ fn main()
             {
                 draw_square(&m, &mut imgbuf);
             }
-        }        
+            // print!("{} ", m.visible);
+        }
+        // println!("");
     }
 
     //saves file
@@ -111,8 +129,8 @@ fn main()
 fn draw_square(sqr: & Square, _imgbuf: &mut ImageBuffer<image::Rgb<u8>, Vec<u8>>)
 {
     //find coordinate
-    let base_x: u32 = sqr.x * (SQUARE_SIZE + 1) as u32;
-    let base_y: u32 = sqr.y * (SQUARE_SIZE + 1) as u32;
+    let base_x: u32 = sqr.y * (SQUARE_SIZE + 1) as u32;
+    let base_y: u32 = sqr.x * (SQUARE_SIZE + 1) as u32;
 
     // draws a square
     for n in 0..5
@@ -144,6 +162,7 @@ fn draw_square(sqr: & Square, _imgbuf: &mut ImageBuffer<image::Rgb<u8>, Vec<u8>>
 
 }
 
+#[derive(Clone, Copy)]
 struct Square
 {
     x: u32,
