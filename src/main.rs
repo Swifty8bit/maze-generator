@@ -3,11 +3,11 @@ use rand::Rng;
 
 // Variables to change
 
-const SQUAREX: u32 = 30;
-const SQUAREY: u32 = 30;
+const SQUAREX: u32 = 50;
+const SQUAREY: u32 = 50;
 
-const BRANCHES: u32 = 10;
-const BRANCH_LENGTH: u32 = 100;
+const BRANCHES: u32 = 100;
+const BRANCH_LENGTH: u32 = 50;
 
 // Variables to not change
 
@@ -19,8 +19,8 @@ const COLOR_BACKGROUND: Rgb<u8> = image::Rgb([0, 0, 0]);
 
 fn main() 
 {
-    let imgx: u32 = 180;
-    let imgy: u32 = 180;
+    let imgx: u32 = SQUAREX * (SQUARE_SIZE as u32 + 1);
+    let imgy: u32 = SQUAREY * (SQUARE_SIZE as u32 + 1);
 
     let mut imgbuf: ImageBuffer<image::Rgb<u8>, Vec<u8>> = image::ImageBuffer::new(imgx,imgy);
 
